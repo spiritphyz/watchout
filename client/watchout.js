@@ -1,7 +1,7 @@
 // start slingin' some d3 here.
 var gameOptions = {
-  boardWidth: 2000,
-  boardHeight: 1000,
+  boardWidth: 1900,
+  boardHeight: 900,
   numberOfEnemies: 10
 };
 
@@ -29,13 +29,15 @@ var enemies = makeEnemies();
 
 var showEnemies = function(enemiesData) {
   d3.select('.board').append('svg')
-    .attr('width', '2000')
-    .attr('height', '1000');
+    .attr('width', '1900')
+    .attr('height', '900');
 
-  d3.select('svg').selectAll('image')
-  .data(enemiesData, d => { d.id; })
+  var asteroids = d3.select('svg').selectAll('image')
+  .data(enemiesData, d => { 
+    return d.id; 
+  });
 
-  .enter()
+  asteroids.enter()
     .append('svg')
     .attr('class', 'enemy')
     .append('image')
@@ -45,13 +47,29 @@ var showEnemies = function(enemiesData) {
     .attr('height', '100px')
     .attr('width', '100px');
   
-  // .exit().remove();
+  asteroids.exit().remove();
 };
 
 showEnemies(enemies);
 
+// play = ->
+//   gameTurn = ->
+//     newEnemyPositions = createEnemies()
+//     render(newEnemyPositions)
 
-// <svg width="10cm" height="8cm" version="1.1"
-//     xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
-//   <image xlink:href="asteroid.png" x="50" y="50" height="100px" width="100px"/>
-// </svg> 
+//   increaseScore = ->
+//     gameStats.score += 1
+//     updateScore()
+// ¶
+// Take a turn every 2 seconds
+
+//   gameTurn()
+//   setInterval gameTurn, 2000
+// ¶
+// Increment the score counter every 50ms
+
+//   setInterval increaseScore, 50
+// ¶
+// Play!
+
+// play()

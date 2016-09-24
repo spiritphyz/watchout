@@ -30,9 +30,27 @@ var makeEnemies = function(amount = gameOptions.numberOfEnemies) {
 var makePlayer = function() {
   return [{
     id: 0,
-    x: 10,
+    x: 50,
     y: 50
   }];
+};
+
+var drag = d3.behavior.drag()
+  .origin(function(d) { return d; })
+  .on('dragstart', function(d) { return dragstarted.bind(this)(d); })
+  .on('drag', function(d) { return dragged.bind(this)(d); })
+  .on('dragend', function(d) { return dragended.bind(this)(d); });
+
+var dragstarted = function(d) {
+  d3.select(this).classed('dragging', true);
+};
+
+var dragged = function(d) {
+  d3.select(this).attr('x', d.x = d3.event.x).attr('y', d.y = d3.event.y);
+};
+
+var dragended = function(d) {
+  d3.select(this).classed('dragging', false);
 };
 
 var showBoard = function() {
@@ -42,7 +60,7 @@ var showBoard = function() {
 };
 
 var showEnemies = function(enemiesData) {
-  var asteroids = d3.select('svg').selectAll('image')
+  var asteroids = d3.select('svg').selectAll('image').filter('.enemy')
     .data(enemiesData, d => { 
       return d.id; 
     });
@@ -54,8 +72,8 @@ var showEnemies = function(enemiesData) {
 
   asteroids.enter()
     .append('svg')
-    .attr('class', 'enemy')
     .append('image')
+    .attr('class', 'enemy')
     .attr('id', enemy => enemy.id)
     .attr('x', enemy => axes.x(enemy.x))
     .attr('y', enemy => axes.y(enemy.y))
@@ -67,29 +85,26 @@ var showEnemies = function(enemiesData) {
 };
 
 var showPlayer = function(playerData) {
-  var player = d3.select('svg').selectAll('image')
+  var player = d3.select('svg').selectAll('image').filter('.player')
     .data(playerData, d => {
       return d.id;
     });
 
-  // player
-  //   .transition().duration(gameOptions.gameInterval - gameOptions.reactionTime)
-  //   .attr('x', enemy => axes.x(enemy.x))
-  //   .attr('y', enemy => axes.y(enemy.y));
-
   player.enter()
     .append('svg')
-    .attr('class', 'player')
     .append('image')
+    .attr('class', 'player')
     .attr('id', player => player.id)
     .attr('x', player => axes.x(player.x))
     .attr('y', player => axes.y(player.y))
     .attr('xlink:href', 'astroboy.png')
     .attr('height', '150px')
-    .attr('width', '150px');
+    .attr('width', '150px')
+    .call(drag);
 
   player.exit().remove();    
 };
+
 
 var play = function() {
   var gameTurn = function() {

@@ -25,51 +25,56 @@ var makeEnemies = function(amount = gameOptions.numberOfEnemies) {
   });
 };
 
-var enemies = makeEnemies();
-
-var showEnemies = function(enemiesData) {
+var showBoard = function() {
   d3.select('.board').append('svg')
     .attr('width', '1900')
     .attr('height', '900');
+};
 
+var showEnemies = function(enemiesData) {
   var asteroids = d3.select('svg').selectAll('image')
   .data(enemiesData, d => { 
     return d.id; 
   });
 
+  asteroids
+    .attr('x', enemy => axes.x(enemy.x))
+    .attr('y', enemy => axes.y(enemy.y));
+
   asteroids.enter()
     .append('svg')
     .attr('class', 'enemy')
     .append('image')
+    .attr('id', enemy => enemy.id)
     .attr('x', enemy => axes.x(enemy.x))
     .attr('y', enemy => axes.y(enemy.y))
     .attr('xlink:href', 'asteroid.png')
     .attr('height', '100px')
     .attr('width', '100px');
-  
+
   asteroids.exit().remove();
 };
 
-showEnemies(enemies);
+var play = function() {
+  var gameTurn = function() {
+    var newEnemyPositions = makeEnemies();
+    // console.log(newEnemyPositions);
+    showEnemies(newEnemyPositions);
+  };
 
-// play = ->
-//   gameTurn = ->
-//     newEnemyPositions = createEnemies()
-//     render(newEnemyPositions)
+  // var increaseScore = function() {
+  //   gameStats.score += 1;
+  //   updateScore();
+  // };
 
-//   increaseScore = ->
-//     gameStats.score += 1
-//     updateScore()
-// ¶
-// Take a turn every 2 seconds
+  // Take a turn every 2 seconds
+  showBoard();
+  gameTurn();
+  setInterval(gameTurn, 100);
 
-//   gameTurn()
-//   setInterval gameTurn, 2000
-// ¶
-// Increment the score counter every 50ms
+  // Increment the score counter every 50ms
+  // setInterval(increaseScore, 50);
+};
 
-//   setInterval increaseScore, 50
-// ¶
 // Play!
-
-// play()
+play();

@@ -38,6 +38,7 @@ var showEnemies = function(enemiesData) {
   });
 
   asteroids
+    .transition().duration(2750)
     .attr('x', enemy => axes.x(enemy.x))
     .attr('y', enemy => axes.y(enemy.y));
 
@@ -70,7 +71,7 @@ var play = function() {
   // Take a turn every 2 seconds
   showBoard();
   gameTurn();
-  setInterval(gameTurn, 100);
+  setInterval(gameTurn, 3000);
 
   // Increment the score counter every 50ms
   // setInterval(increaseScore, 50);

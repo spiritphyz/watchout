@@ -2,6 +2,8 @@
 var gameOptions = {
   boardWidth: 1900,
   boardHeight: 900,
+  gameInterval: 3000,
+  reactionTime: 250,
   numberOfEnemies: 10
 };
 
@@ -25,20 +27,28 @@ var makeEnemies = function(amount = gameOptions.numberOfEnemies) {
   });
 };
 
+var makePlayer = function() {
+  return [{
+    id: 0,
+    x: 10,
+    y: 50
+  }];
+};
+
 var showBoard = function() {
   d3.select('.board').append('svg')
-    .attr('width', '1900')
-    .attr('height', '900');
+    .attr('width', gameOptions.boardWidth)
+    .attr('height', gameOptions.boardHeight);
 };
 
 var showEnemies = function(enemiesData) {
   var asteroids = d3.select('svg').selectAll('image')
-  .data(enemiesData, d => { 
-    return d.id; 
-  });
+    .data(enemiesData, d => { 
+      return d.id; 
+    });
 
   asteroids
-    .transition().duration(2750)
+    .transition().duration(gameOptions.gameInterval - gameOptions.reactionTime)
     .attr('x', enemy => axes.x(enemy.x))
     .attr('y', enemy => axes.y(enemy.y));
 
@@ -56,10 +66,34 @@ var showEnemies = function(enemiesData) {
   asteroids.exit().remove();
 };
 
+var showPlayer = function(playerData) {
+  var player = d3.select('svg').selectAll('image')
+    .data(playerData, d => {
+      return d.id;
+    });
+
+  // player
+  //   .transition().duration(gameOptions.gameInterval - gameOptions.reactionTime)
+  //   .attr('x', enemy => axes.x(enemy.x))
+  //   .attr('y', enemy => axes.y(enemy.y));
+
+  player.enter()
+    .append('svg')
+    .attr('class', 'player')
+    .append('image')
+    .attr('id', player => player.id)
+    .attr('x', player => axes.x(player.x))
+    .attr('y', player => axes.y(player.y))
+    .attr('xlink:href', 'astroboy.png')
+    .attr('height', '150px')
+    .attr('width', '150px');
+
+  player.exit().remove();    
+};
+
 var play = function() {
   var gameTurn = function() {
     var newEnemyPositions = makeEnemies();
-    // console.log(newEnemyPositions);
     showEnemies(newEnemyPositions);
   };
 
@@ -70,8 +104,10 @@ var play = function() {
 
   // Take a turn every 2 seconds
   showBoard();
+  var newPlayerPosition = makePlayer();
+  showPlayer(newPlayerPosition);
   gameTurn();
-  setInterval(gameTurn, 3000);
+  setInterval(gameTurn, gameOptions.gameInterval);
 
   // Increment the score counter every 50ms
   // setInterval(increaseScore, 50);
